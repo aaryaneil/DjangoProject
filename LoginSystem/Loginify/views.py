@@ -2,6 +2,10 @@ from django.shortcuts import render, redirect
 from django.contrib import messages
 from .models import UserDetails
 
+from django.http import JsonResponse
+from django.views.decorators.csrf import csrf_exempt
+import json
+
 def signup(request):
     if request.method == 'POST':
         username = request.POST['username']
@@ -32,3 +36,40 @@ def login(request):
             messages.error(request, 'Invalid email or password')
     
     return render(request, 'Loginify/login.html')
+
+def get_all_users(request):
+    users = UserDetails.objects.all().values('username', 'email')
+    return JsonResponse(list(users), safe=False)
+
+def get_user_by_email(request, email):
+    try:
+        user = UserDetails.objects.get(email=email)
+        user_data = {'username': user.username, 'email': user.email}
+        return JsonResponse(user_data)
+    except UserDetails.DoesNotExist:
+        return JsonResponse({'error': 'User not found'}, status=404)
+
+@csrf_exempt
+def update_user(request, email):
+    if request.method == 'PUT':
+        try:
+            user = UserDetails.objects.get(email=email)
+            data = json.loads(request.body)
+            user.username = data.get('username', user.username)
+            user.password = data.get('password', user.password)
+            user.save()
+            return JsonResponse({'message': 'User updated successfully'})
+        except UserDetails.DoesNotExist:
+            return JsonResponse({'error': 'User not found'}, status=404)
+    return JsonResponse({'error': 'Invalid request method'}, status=400)
+
+@csrf_exempt
+def delete_user(request, email):
+    if request.method == 'DELETE':
+        try:
+            user = UserDetails.objects.get(email=email)
+            user.delete()
+            return JsonResponse({'message': 'User deleted successfully'})
+        except UserDetails.DoesNotExist:
+            return JsonResponse({'error': 'User not found'}, status=404)
+    return JsonResponse({'error': 'Invalid request method'}, status=400)
