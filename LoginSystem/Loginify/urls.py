@@ -4,10 +4,10 @@ from . import views
 app_name = 'Loginify'
 
 urlpatterns = [
-    path('signup/', views.signup, name='signup'),
-    path('login/', views.login, name='login'),
-    path('users/', views.get_all_users, name='get_all_users'),
-    path('users/<str:email>/', views.get_user_by_email, name='get_user_by_email'),
-    path('users/update/<str:email>/', views.update_user, name='update_user'),
-    path('users/delete/<str:email>/', views.delete_user, name='delete_user'),
+    path('sign-up/', views.signup, name='signup'),
+    path('log-in/', views.login, name='login'),
+    path('users/', views.getAllUsers, name='get_all_users'),
+    path('users/<str:email>/', views.getUserByEmail, name='get_user'),
+    path('users/update/<str:email>/', views.updateUser, name='update_user'),
+    path('users/delete/<str:email>/', views.deleteUser, name='delete_user'),
 ]

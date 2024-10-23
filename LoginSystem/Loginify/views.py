@@ -37,11 +37,11 @@ def login(request):
     
     return render(request, 'Loginify/login.html')
 
-def get_all_users(request):
+def getAllUsers(request):
     users = UserDetails.objects.all().values('username', 'email')
     return JsonResponse(list(users), safe=False)
 
-def get_user_by_email(request, email):
+def getUserByEmail(request, email):
     try:
         user = UserDetails.objects.get(email=email)
         user_data = {'username': user.username, 'email': user.email}
@@ -50,7 +50,7 @@ def get_user_by_email(request, email):
         return JsonResponse({'error': 'User not found'}, status=404)
 
 @csrf_exempt
-def update_user(request, email):
+def updateUser(request, email):
     if request.method == 'PUT':
         try:
             user = UserDetails.objects.get(email=email)
@@ -64,7 +64,7 @@ def update_user(request, email):
     return JsonResponse({'error': 'Invalid request method'}, status=400)
 
 @csrf_exempt
-def delete_user(request, email):
+def deleteUser(request, email):
     if request.method == 'DELETE':
         try:
             user = UserDetails.objects.get(email=email)
